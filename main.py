@@ -17,6 +17,3 @@ class Pokemon:
     @energia_actual.setter
     def energia_actual(self):
         pass
-
-        
-    
