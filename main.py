@@ -1,13 +1,15 @@
-from pokedex import mostrar_catalogo_disponible
+from pokedex import mostrar_catalogo_disponible, CATALOGO_POKEMON
 from abc import ABC, abstractmethod
 
 #crear la base abstracta "pokemon"
 class Pokemon(ABC):
-    def __init__(self, nombre, hp_maximo, energia_maxima, tipo):
+    def __init__(self, nombre, hp_actual, hp_maximo, energia_actual, energia_maxima, tipo):
         self.nombre = nombre
         self.tipo = tipo
         #protegemos estos atributos con _
+        self._hp_actual = hp_actual
         self._hp_maximo = hp_maximo
+        self._energia_actual = energia_actual
         self._energia_maxima = energia_maxima
 
 #crear 4 clases hijas en otro archivo
@@ -23,12 +25,20 @@ class Pokemon(ABC):
             self._hp_actual = self._hp_maximo
         else:
             self._hp_actual = valor
+        return self.hp_actual
     @property
     def energia_actual(self, valor):
+        # Validación, no bajar de 0 ni subir del maximo
+        if valor < 0:
+            self._energia_actual = 0
+        elif valor > self._energia_maxima:
+            self._energia_actual = self._energia_maxima
+        else:
+            self._energia_actual = valor
         return self.energia_actual
     @energia_actual.setter
     def energia_actual(self):
-        pass
+        return self.energia_actual
 
 class Jugador:
     def __init__(self, numero_jugador, pokemon_seleccionado=None):
@@ -37,19 +47,27 @@ class Jugador:
 
 
     def seleccion_pokemon(self):
-            self.pokemon_seleccionado = input(f"Jugador {self.numero_jugador}, elija el número de su Pokémon: ")
-            return self.pokemon_seleccionado
+        while True:
+            opcion_catalogo = input(f"Jugador {self.numero_jugador}, elija el número de su Pokémon: ")
+            for clave in CATALOGO_POKEMON:
+                if opcion_catalogo == clave:
+                    datos = CATALOGO_POKEMON[clave]
+                    self.pokemon_seleccionado = Pokemon(datos["nombre"], datos["hp_maximo"], datos["hp_maximo"], datos["energia_maxima"], datos['energia_maxima'], datos["tipo"])
+                    print(f"Seleccionaste a {datos['nombre']} como tu pokemon.")
+                    return self.pokemon_seleccionado
+            print(f"Debe ingresar un numero valido entre 1 y {len(CATALOGO_POKEMON)}")
+            if opcion_catalogo == "salir":
+                break
+
+    
+    def atacar(self, pokemon_enemigo, multiplicador):
+        self.pokemon_seleccionado.energia_actual -= 10
+        pokemon_enemigo.hp_actual -= (10 * multiplicador)
+        print(f"{self.pokemon_seleccionado.nombre} ha atacado a {pokemon_enemigo.nombre} con un ataque normal. {pokemon_enemigo.nombre} pierde 10 HP y {self.pokemon_seleccionado.nombre} pierde 10 EP.")
 
 jugador1=Jugador(1)
 jugador2=Jugador(2)
-charmander = Pokemon("Charmander", 100, 100, 50, 50, "Fuego")
-vulpix = Pokemon("Vulpix", 90, 90, 60, 60, "Fuego")
-squirtle = Pokemon("Squirtle", 110, 110, 45, 45, "Agua")
-psyduck = Pokemon("Psyduck", 95, 95, 55, 55, "Agua")
-bulbasaur = Pokemon("Bulbasaur", 105, 105, 50, 50, "Planta")
-oddish = Pokemon("Oddish", 90, 90, 60, 60, "Planta")
-pikachu = Pokemon("Pikachu", 80, 80, 70, 70, "Electrico")
-magnemite = Pokemon("Magnemite", 75, 75, 80, 80, "Electrico")
+jugador_pc=Jugador(2)
 
 print(f"\n{'╔' + '='*100 + '╗'}\n║{">>> SIMULADOR DE BATALLAS POKEMON <<<":^100}║\n{'╚' + '='*100 + '╝'}")
 print(f"{'Escriba salir para cerrar el juego.':>100}")
@@ -58,13 +76,13 @@ print(f"\n\t{'SELECCIONE MODO DE JUEGO:':<100}\n\t[1] Jugador vs Jugador\n\t[2] 
 while True:
     opcion = input(f"\tIngrese modo de juego (1 o 2): \t")
     if opcion == "1":
-        mostrar_catalogo_disponible()
         jugador1.seleccion_pokemon()
-        print(jugador1.pokemon_seleccionado)
         jugador2.seleccion_pokemon()
-        print(jugador2.pokemon_seleccionado)
         break
     elif opcion == "2":
+        jugador1.seleccion_pokemon()
+        jugador_pc.seleccion_pokemon()
+        break
         pass
     elif opcion == "salir":
         break
