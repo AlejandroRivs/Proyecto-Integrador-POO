@@ -1,23 +1,30 @@
 #crear 4 clases importando la clase "Pokemon"  (desde main) como padre
+daño = 10
+multiplicador = 1
 from main import Pokemon
 class PokemonAgua(Pokemon):
-    def __init__(self, nombre, hp_maximo, energia_maxima):
-        # Super llama al constructor de la clase padre (Pokemon)
-        super().__init__(nombre, hp_maximo, energia_maxima, "Agua")
+    def __init__(self, nombre, hp_actual, hp_maximo, energia_actual, energia_maxima, tipo):
+        super().__init__(self, nombre, hp_actual, hp_maximo, energia_actual, energia_maxima, tipo)
+        
     def atacar(self, pokemon_enemigo):
-        pass
+        if isinstance(pokemon_enemigo, PokemonFuego):
+            multiplicador = 2
+        daño_final = daño * multiplicador
+        pokemon_enemigo.hp_actual -= daño_final
+
 class PokemonFuego(Pokemon):
-    def __init__(self, nombre, hp_maximo, energia_maxima):
-        super().__init__(nombre, hp_maximo, energia_maxima, "Fuego")
     def atacar(self, pokemon_enemigo):
-        pass
+        if isinstance(pokemon_enemigo, PokemonPlanta):
+            multiplicador = 2
+        daño_final = daño * multiplicador
+        pokemon_enemigo.hp_actual -= daño_final
+
 class PokemonPlanta(Pokemon):
-    def __init__(self, nombre, hp_maximo, energia_maxima):
-        super().__init__(nombre, hp_maximo, energia_maxima, "Planta")
     def atacar(self, pokemon_enemigo):
-        pass
+        if isinstance(pokemon_enemigo, PokemonAgua):
+            multiplicador = 2
+        daño_final = daño * multiplicador
+        pokemon_enemigo.hp_actual -= daño_final
+
 class PokemonElectrico(Pokemon):
-    def __init__(self, nombre, hp_maximo, energia_maxima):
-        super().__init__(nombre, hp_maximo, energia_maxima, "Electrico")
-    def atacar(self, pokemon_enemigo):
-        pass
+    pass
