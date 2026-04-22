@@ -1,7 +1,7 @@
 from pokedex import mostrar_catalogo_disponible, CATALOGO_POKEMON
 from abc import ABC, abstractmethod
 from random import randint
-#uso de * para importar todo ya que en ese archivo solo existen esas 4 clases
+
 
 #crear la base abstracta "pokemon"
 class Pokemon(ABC):
@@ -132,7 +132,6 @@ class SimuladorPokemon:
 
         print(pokemon_logo)
         print(f"\n{'╔' + '='*100 + '╗'}\n║{">>> SIMULADOR DE BATALLAS POKEMON <<<":^100}║\n{'╚' + '='*100 + '╝'}")
-        print(f"{'Escriba salir para cerrar el juego.':>100}")
         print(f"\n\t{'SELECCIONE MODO DE JUEGO:':<100}\n\t[1] Jugador vs Jugador\n\t[2] Jugador vs Computadora\n")
     
     def iniciar_batalla(self, jugador1, jugador2):
@@ -143,58 +142,68 @@ class SimuladorPokemon:
         costo_defensa = 5
         aumento_descanso = 20
 
-        while jugador1.pokemon_elegido.hp_actual > 0 and jugador2.pokemon_elegido.hp_actual > 0:    
+        while jugador1.pokemon_elegido.hp_actual > 0 and jugador2.pokemon_elegido.hp_actual > 0:   
             for jugador in [jugador1, jugador2]:
-                print(f"\n{'╔' + '='*100 + '╗'}")
-                print(f"\tTurno del jugador {jugador.numero_jugador}: {jugador.pokemon_elegido.nombre} \n\t(HP: {jugador.pokemon_elegido.hp_actual}/{jugador.pokemon_elegido.hp_maximo}, EP: {jugador.pokemon_elegido.energia_actual}/{jugador.pokemon_elegido.energia_maxima})\n")
-                
-                #un if para determinar quien es el jugador actual y quien el oponente
+                # un if para determinar quien es el jugador actual y quien el oponente
                 oponente = jugador2 if jugador == jugador1 else jugador1
 
-                #validacion de parálisis y defensa antes del input para evitar inputs innecesarios
-                if jugador.pokemon_elegido.paralizado:
-                    print(f"\n\t{jugador.pokemon_elegido.nombre} está paralizado y pierde su turno.")
-                    input("\tPresione Enter para continuar...")
-                    jugador.pokemon_elegido.paralizado = False  # Se quita la parálisis después de perder un turno
-                    continue  # Salta el turno del jugador paralizado
+                # verificar hp's antes de cada ciclo
+                if oponente.pokemon_elegido.hp_actual <= 0:
+                    break
 
-                if jugador.pokemon_elegido.defendiendo:
-                    print(f"\n\t{jugador.pokemon_elegido.nombre} está defendiendo y recibirá menos daño en este turno.")
-                    jugador.pokemon_elegido.defendiendo = False  # Se quita el modo defensa después de un turnol     
-                
-                #en caso que el jugador sea la computadora(jugador 3)
-                if jugador.numero_jugador == 3:
-                    opcion_batalla = randint(1, 3)  # La computadora elige aleatoriamente entre atacar, defender o descansar
-                    print(f"\tLa computadora elige la opcion {opcion_batalla}")
-                else:
-                    print(f"\t[1] Atacar (costo: {costo_ataque} EP) \n\t[2] Defender (costo: {costo_defensa} EP)\n\t[3] Descansar (restaura: {aumento_descanso} EP)")
-                    print(f"{'╚' + '='*100 + '╝'}")
-                    try:
-                        print(f"\n{'╔' + '='*100 + '╗'}")
-                        opcion_batalla = int(input("\tIngrese el número de la acción que desea realizar: "))      
-                        print(f"{'╚' + '='*100 + '╝'}")
-                    except ValueError:
-                        print("\tPor favor, ingrese un número válido.")              
-                #atacar
-                if opcion_batalla == 1: 
-                    if jugador.pokemon_elegido.energia_actual >= costo_ataque:
-                        daño = jugador.pokemon_elegido.atacar(oponente.pokemon_elegido)
-                        jugador.pokemon_elegido.energia_actual -= costo_ataque
-                    else:
-                        print(f"\n\tNo tienes suficiente energía para atacar. Necesitas al menos {costo_ataque} EP.")
-                #defender
-                elif opcion_batalla == 2:
-                    if jugador.pokemon_elegido.energia_actual >= costo_defensa:
-                        jugador.pokemon_elegido.defendiendo = True
-                        jugador.pokemon_elegido.energia_actual -= costo_defensa
-                        print(f"\n{jugador.pokemon_elegido.nombre} esta en modo defensa, recibiraa menos daño en el siguiente turno.")
-                    else:
-                        print(f"\n\tNo tienes suficiente energía para defender. Necesitas al menos {costo_defensa} EP.")
+                # Creamos un bucle interno para que no pierda el turno por error de dedo o falta de energía
+                accion_completada = False
+                while not accion_completada:
+                    print(f"\tTurno del jugador {jugador.numero_jugador}: {jugador.pokemon_elegido.nombre} \n\t(HP: {jugador.pokemon_elegido.hp_actual}/{jugador.pokemon_elegido.hp_maximo}, EP: {jugador.pokemon_elegido.energia_actual}/{jugador.pokemon_elegido.energia_maxima})\n")
+                    
+                    # validacion de parálisis y defensa antes del input para evitar inputs innecesarios
+                    if jugador.pokemon_elegido.paralizado:
+                        print(f"\n\t{jugador.pokemon_elegido.nombre} está paralizado y pierde su turno.")
+                        jugador.pokemon_elegido.paralizado = False  # Se quita la parálisis después de perder un turno
+                        accion_completada = True # El turno se consume por parálisis
+                        continue  # Salta el turno del jugador paralizado
 
-                #descansar
-                elif opcion_batalla == 3:
-                    jugador.pokemon_elegido.energia_actual += aumento_descanso
-                    print(f"\n\t{jugador.pokemon_elegido.nombre} ha descansado y recupera {aumento_descanso} EP.")
+                    if jugador.pokemon_elegido.defendiendo:
+                        print(f"\n\t{jugador.pokemon_elegido.nombre} está defendiendo y recibirá menos daño en este turno.")
+                        jugador.pokemon_elegido.defendiendo = False  # Se quita el modo defensa después de un turnol     
+                    
+                    # en caso que el jugador sea la computadora(jugador 3)
+                    if jugador.numero_jugador == 3:
+                        opcion_batalla = randint(1, 3)  # La computadora elige aleatoriamente entre atacar, defender o descansar
+                        print(f"\tLa computadora elige la opcion {opcion_batalla}")
+                    else:
+                        print(f"\t[1] Atacar (costo: {costo_ataque} EP) \n\t[2] Defender (costo: {costo_defensa} EP)\n\t[3] Descansar (restaura: {aumento_descanso} EP)\n")
+                        try:
+                            opcion_batalla = int(input(f"\tIngrese la accion (1, 2 o 3) para {jugador.pokemon_elegido.nombre}: "))      
+                        except ValueError:
+                            print("\tPor favor, ingrese un número válido (1, 2 o 3).")
+                            continue # Vuelve a preguntar sin saltar de jugador              
+
+                    if opcion_batalla == 1:
+                        if jugador.pokemon_elegido.energia_actual >= costo_ataque:
+                            daño_final = jugador.pokemon_elegido.atacar(oponente.pokemon_elegido)
+                            print(f"\n\t{jugador.pokemon_elegido.nombre} ha atacado a {oponente.pokemon_elegido.nombre} causando {daño_final} puntos de daño.")
+                            jugador.pokemon_elegido.energia_actual -= costo_ataque
+                            accion_completada = True # Acción exitosa
+                        else:
+                            print(f"\n\t\tNo tienes suficiente energía para atacar. Necesitas al menos {costo_ataque} EP.")
+                    
+                    elif opcion_batalla == 2:
+                        if jugador.pokemon_elegido.energia_actual >= costo_defensa:
+                            jugador.pokemon_elegido.defendiendo = True
+                            jugador.pokemon_elegido.energia_actual -= costo_defensa
+                            print(f"\n\t{jugador.pokemon_elegido.nombre} esta en modo defensa, recibira menos daño en el siguiente turno.")
+                            accion_completada = True # Acción exitosa
+                        else:
+                            print(f"\n\t\tNo tienes suficiente energía para defender. Necesitas al menos {costo_defensa} EP.")
+
+                    elif opcion_batalla == 3:
+                        jugador.pokemon_elegido.energia_actual += aumento_descanso
+                        print(f"\n\t{jugador.pokemon_elegido.nombre} ha descansado y recupera {aumento_descanso} EP.")
+                        accion_completada = True # Acción exitosa
+                    else:
+                        print("\n\t\t\t!!! Opción no válida. Elija 1, 2 o 3.!!!\n")
+
 
                 #verificar hp luego de cada accion para evitar acciones ilogicas
                 if oponente.pokemon_elegido.hp_actual <= 0:
@@ -205,6 +214,7 @@ class SimuladorPokemon:
     def menu(self):
         self.mostrar_encabezado()     
         while True:
+            print(f"{'Escriba salir para cerrar el juego.':>100}")
             opcion = input(f"\tIngrese modo de juego (1 o 2): \t")    
 
             if opcion == "1":
