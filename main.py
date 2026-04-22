@@ -137,7 +137,9 @@ class SimuladorPokemon:
     def iniciar_batalla(self, jugador1, jugador2):
         print(f"\n{'╔' + '='*100 + '╗'}\n║{">>> ¡COMIENZA LA BATALLA! <<<":^100}║\n{'╚' + '='*100 + '╝'}")
         combate = f"{jugador1.pokemon_elegido.nombre} vs {jugador2.pokemon_elegido.nombre}"
-        print(f"\n{combate:^100}")
+        print(f"{'╔' + '='*100 + '╗'}")
+        print(f"║{combate:^100}║")
+        print(f"{'╚' + '='*100 + '╝'}")
         costo_ataque = 15
         costo_defensa = 5
         aumento_descanso = 20
@@ -154,6 +156,7 @@ class SimuladorPokemon:
                 # Creamos un bucle interno para que no pierda el turno por error de dedo o falta de energía
                 accion_completada = False
                 while not accion_completada:
+                    print(f"{'╔' + '='*100 + '╗'}")
                     print(f"\tTurno del jugador {jugador.numero_jugador}: {jugador.pokemon_elegido.nombre} \n\t(HP: {jugador.pokemon_elegido.hp_actual}/{jugador.pokemon_elegido.hp_maximo}, EP: {jugador.pokemon_elegido.energia_actual}/{jugador.pokemon_elegido.energia_maxima})\n")
                     
                     # validacion de parálisis y defensa antes del input para evitar inputs innecesarios
@@ -173,37 +176,51 @@ class SimuladorPokemon:
                         print(f"\tLa computadora elige la opcion {opcion_batalla}")
                     else:
                         print(f"\t[1] Atacar (costo: {costo_ataque} EP) \n\t[2] Defender (costo: {costo_defensa} EP)\n\t[3] Descansar (restaura: {aumento_descanso} EP)\n")
+                        print(f"{'╚' + '='*100 + '╝'}")
                         try:
-                            opcion_batalla = int(input(f"\tIngrese la accion (1, 2 o 3) para {jugador.pokemon_elegido.nombre}: "))      
+                            print(f"{'╔' + '='*100 + '╗'}")
+                            opcion_batalla = int(input(f"\tIngrese la accion (1, 2 o 3) para {jugador.pokemon_elegido.nombre}: "))   
+                            print(f"{'╚' + '='*100 + '╝'}")   
                         except ValueError:
                             print("\tPor favor, ingrese un número válido (1, 2 o 3).")
                             continue # Vuelve a preguntar sin saltar de jugador              
-
+            
                     if opcion_batalla == 1:
+
                         if jugador.pokemon_elegido.energia_actual >= costo_ataque:
-                            daño_final = jugador.pokemon_elegido.atacar(oponente.pokemon_elegido)
-                            print(f"\n\t{jugador.pokemon_elegido.nombre} ha atacado a {oponente.pokemon_elegido.nombre} causando {daño_final} puntos de daño.")
+                            print(f"{'╔' + '='*100 + '╗'}")
+                            jugador.pokemon_elegido.atacar(oponente.pokemon_elegido)
                             jugador.pokemon_elegido.energia_actual -= costo_ataque
                             accion_completada = True # Acción exitosa
+                            print(f"{'╚' + '='*100 + '╝'}")
                         else:
-                            print(f"\n\t\tNo tienes suficiente energía para atacar. Necesitas al menos {costo_ataque} EP.")
+                            print(f"{'╔' + '='*100 + '╗'}")
+                            print(f"\t\tNo tienes suficiente energía para atacar. Necesitas al menos {costo_ataque} EP.")
+                            print(f"{'╚' + '='*100 + '╝'}") 
                     
                     elif opcion_batalla == 2:
                         if jugador.pokemon_elegido.energia_actual >= costo_defensa:
                             jugador.pokemon_elegido.defendiendo = True
                             jugador.pokemon_elegido.energia_actual -= costo_defensa
-                            print(f"\n\t{jugador.pokemon_elegido.nombre} esta en modo defensa, recibira menos daño en el siguiente turno.")
+                            print(f"{'╔' + '='*100 + '╗'}")
+                            print(f"\t{jugador.pokemon_elegido.nombre} esta en modo defensa, recibira menos daño en el siguiente turno.")
+                            print(f"{'╚' + '='*100 + '╝'}") 
                             accion_completada = True # Acción exitosa
                         else:
-                            print(f"\n\t\tNo tienes suficiente energía para defender. Necesitas al menos {costo_defensa} EP.")
+                            print(f"{'╔' + '='*100 + '╗'}")
+                            print(f"\t\tNo tienes suficiente energía para defender. Necesitas al menos {costo_defensa} EP.")
+                            print(f"{'╚' + '='*100 + '╝'}")
 
                     elif opcion_batalla == 3:
                         jugador.pokemon_elegido.energia_actual += aumento_descanso
-                        print(f"\n\t{jugador.pokemon_elegido.nombre} ha descansado y recupera {aumento_descanso} EP.")
+                        print(f"{'╔' + '='*100 + '╗'}")
+                        print(f"\t{jugador.pokemon_elegido.nombre} ha descansado y recupera {aumento_descanso} EP.")
+                        print(f"{'╚' + '='*100 + '╝'}")
                         accion_completada = True # Acción exitosa
                     else:
+                        print(f"{'╔' + '='*100 + '╗'}") 
                         print("\n\t\t\t!!! Opción no válida. Elija 1, 2 o 3.!!!\n")
-
+                        print(f"{'╚' + '='*100 + '╝'}")
 
                 #verificar hp luego de cada accion para evitar acciones ilogicas
                 if oponente.pokemon_elegido.hp_actual <= 0:

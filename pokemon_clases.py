@@ -13,7 +13,7 @@ class PokemonAgua(Pokemon):
 
         if isinstance(pokemon_enemigo, PokemonFuego):
             multiplicador *= 2
-            print(f"\n\tEs super efectivo !")
+            print(f"\tEs super efectivo !")
 
         if pokemon_enemigo.defendiendo:
             print(f"\n\t{pokemon_enemigo.nombre} se ha defendido y redujo el daño a la mitad.")
@@ -35,7 +35,7 @@ class PokemonFuego(Pokemon):
 
         if isinstance(pokemon_enemigo, PokemonPlanta):
             multiplicador *= 2
-            print(f"\n\tEs super efectivo !")
+            print(f"\tEs super efectivo !")
 
         if pokemon_enemigo.defendiendo:
             print(f"\n\t{pokemon_enemigo.nombre} se ha defendido y redujo el daño a la mitad.")
@@ -57,7 +57,7 @@ class PokemonPlanta(Pokemon):
 
         if isinstance(pokemon_enemigo, PokemonAgua):
             multiplicador *= 2
-            print(f"\n\tEs super efectivo !")
+            print(f"\tEs super efectivo !")
 
         if pokemon_enemigo.defendiendo:
             print(f"\n\t{pokemon_enemigo.nombre} se ha defendido y redujo el daño a la mitad.")
@@ -75,7 +75,7 @@ class PokemonElectrico(Pokemon):
         multiplicador = 1
         
         if pokemon_enemigo.defendiendo:
-            print(f"\n\t{pokemon_enemigo.nombre} se ha defendido y reduce el daño a la mitad.")
+            print(f"\t{pokemon_enemigo.nombre} se ha defendido y reduce el daño a la mitad.")
             multiplicador = 0.5
         daño_final = daño * multiplicador
         pokemon_enemigo.hp_actual -= daño_final
@@ -84,5 +84,5 @@ class PokemonElectrico(Pokemon):
             #se paraliza al enemigo y se le asigna el atributo "paralizado" como True para que pierda su próximo turno
             print(f"\n\t¡{pokemon_enemigo.nombre} ha sido paralizado y perderá su próximo turno!")
             pokemon_enemigo.paralizado = True
-        print(f"\n\t{self.nombre} ha atacado a {pokemon_enemigo.nombre} causando {daño_final} puntos de daño.")
+        print(f"\t{self.nombre} ha atacado a {pokemon_enemigo.nombre} causando {daño_final} puntos de daño.")
         return daño_final
